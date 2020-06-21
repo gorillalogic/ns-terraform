@@ -6,3 +6,16 @@
 .terraform/
 kinesis_consumer.zip
 *.tfstate.*
+slackbot_lambda.zip
+src/slackbot_lambda/bin/
+src/slackbot_lambda/certifi-2020.4.5.1.dist-info/
+src/slackbot_lambda/certifi/
+src/slackbot_lambda/chardet-3.0.4.dist-info/
+src/slackbot_lambda/chardet/
+src/slackbot_lambda/idna-2.9.dist-info/
+src/slackbot_lambda/idna/
+src/slackbot_lambda/requests-2.23.0.dist-info/
+src/slackbot_lambda/requests/
+src/slackbot_lambda/urllib3-1.25.9.dist-info/
+src/slackbot_lambda/urllib3/
+

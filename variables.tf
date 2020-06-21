@@ -50,3 +50,12 @@ variable "default_tags" {
     version: "0.2"
   }
 }
+
+# Secrets
+variable "secret_grafana_admin_pass" {
+  description = "Default Grafana Admin Password"
+}
+
+variable "secret_influxdb_admin_pass" {
+  description = "Default InfluxDB Admin Password"
+}

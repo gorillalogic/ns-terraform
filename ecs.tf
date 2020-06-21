@@ -37,7 +37,7 @@ resource "aws_ecs_task_definition" "noise_alert" {
         },
         {
           "name": "GF_SECURITY_ADMIN_PASSWORD",
-          "value": "42noisealert42"
+          "value": "${var.secret_grafana_admin_pass}"
         },
         {
           "name": "GF_SECURITY_LOGIN_REMEMBER_DAYS",
@@ -90,7 +90,7 @@ resource "aws_ecs_task_definition" "noise_alert" {
         },
         {
           "name": "INFLUXDB_USER_PASSWORD",
-          "value": "42noisealert42"
+          "value": "${var.secret_influxdb_admin_pass}"
         }
       ],
       "logConfiguration": {
@@ -133,7 +133,7 @@ resource "aws_ecs_task_definition" "noise_alert" {
         },
         {
           "name": "INFLUXDB_PASS",
-          "value": "42noisealert42"
+          "value": "${var.secret_influxdb_admin_pass}"
         },
         {
           "name": "KINESIS_STREAM_NAME",
