@@ -6,6 +6,10 @@ resource "aws_iot_thing" "pi_collector" {
   name = "pi_collector"
 }
 
+resource "aws_iot_thing" "pi_collector_leo" {
+  name = "pi_collector_leo"
+}
+
 resource "aws_iot_topic_rule" "kinesis_push_rule" {
   name = "kinesis_push_rule"
   enabled = true
@@ -31,6 +35,18 @@ data "aws_iam_policy_document" "iot_thing_connect_policy" {
   }
 }
 
+data "aws_iam_policy_document" "iot_thing_connect_policy_leo" {
+  statement {
+    actions = [
+      "iot:Connect",
+    ]
+
+    resources = [
+      "arn:aws:iot:${var.aws_region}:${var.aws_account_id}:client/${aws_iot_thing.pi_collector_leo.name}"
+    ]
+  }
+}
+
 data "aws_iam_policy_document" "iot_thing_pub_policy" {
   statement {
     actions = [
@@ -48,14 +64,28 @@ resource "aws_iot_certificate" "pi_collector" {
   active = true
 }
 
+resource "aws_iot_certificate" "pi_collector_leo" {
+  active = true
+}
+
 resource "aws_iot_thing_principal_attachment" "pi_collector" {
   principal = aws_iot_certificate.pi_collector.arn
   thing     = aws_iot_thing.pi_collector.name
 }
 
+resource "aws_iot_thing_principal_attachment" "pi_collector_leo" {
+  principal = aws_iot_certificate.pi_collector_leo.arn
+  thing     = aws_iot_thing.pi_collector_leo.name
+}
+
 resource "aws_iot_policy" "iot_thing_connect_policy" {
   name = "iot-thing-connect-policy"
   policy = data.aws_iam_policy_document.iot_thing_connect_policy.json
+}
+
+resource "aws_iot_policy" "iot_thing_connect_policy_leo" {
+  name = "iot-thing-connect-policy-leo"
+  policy = data.aws_iam_policy_document.iot_thing_connect_policy_leo.json
 }
 
 resource "aws_iot_policy" "iot_thing_pub_policy" {
@@ -71,4 +101,14 @@ resource "aws_iot_policy_attachment" "connect" {
 resource "aws_iot_policy_attachment" "pub" {
   policy = aws_iot_policy.iot_thing_pub_policy.name
   target = aws_iot_certificate.pi_collector.arn
+}
+
+resource "aws_iot_policy_attachment" "connect_leo" {
+  policy = aws_iot_policy.iot_thing_connect_policy_leo.name
+  target = aws_iot_certificate.pi_collector_leo.arn
+}
+
+resource "aws_iot_policy_attachment" "pub_leo" {
+  policy = aws_iot_policy.iot_thing_pub_policy.name
+  target = aws_iot_certificate.pi_collector_leo.arn
 }
