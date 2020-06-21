@@ -5,3 +5,4 @@
 # Module directory
 .terraform/
 kinesis_consumer.zip
+*.tfstate.*
