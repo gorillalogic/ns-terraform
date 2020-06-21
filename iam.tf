@@ -50,9 +50,14 @@ data "aws_iam_policy_document" "ecs_kinesis_policy" {
   }
 }
 
-data "aws_iam_policy_document" "ecs_ecr_auth_policy" {
+data "aws_iam_policy_document" "ecs_ecr_policy" {
   statement {
     actions = [
+      "ecr:DescribeImages",
+      "ecr:DescribeRepositories",
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:GetDownloadUrlForLayer",
+      "ecr:BatchGetImage",
       "ecr:GetAuthorizationToken",
     ]
 
@@ -60,18 +65,7 @@ data "aws_iam_policy_document" "ecs_ecr_auth_policy" {
   }
 }
 
-data "aws_iam_policy_document" "ecs_ecr_policy" {
-  statement {
-    actions = [
-      "ecr:DescribeImages",
-      "ecr:DescribeRepositories",
-    ]
-
-    resources = [aws_ecr_repository.kinesis_consumer.arn]
-  }
-}
-
-data "aws_iam_policy_document" "iot_kinesis_role_policy" {
+data "aws_iam_policy_document" "iot_kinesis_policy" {
   statement {
     actions = [
       "kinesis:PutRecord"
@@ -85,7 +79,12 @@ data "aws_iam_policy_document" "iot_kinesis_role_policy" {
 
 // Roles
 resource "aws_iam_role" "ecs_task_execution_role" {
-  name = "grafana_ecs_task_execution_role-ecs"
+  name = "ecs_task_execution_role"
+  assume_role_policy = data.aws_iam_policy_document.ecs_assume_role_policy.json
+}
+
+resource "aws_iam_role" "ecs_task_role" {
+  name = "ecs_task_role"
   assume_role_policy = data.aws_iam_policy_document.ecs_assume_role_policy.json
 }
 
@@ -95,32 +94,26 @@ resource "aws_iam_role" "iot_kinesis_role" {
 }
 
 // Attach Policies to Roles
-resource "aws_iam_role_policy" "attach_cloudwatch_to_ecs" {
+resource "aws_iam_role_policy" "attach_cloudwatch_to_execution_ecs" {
   name   = "attach_cloudwatch_to_ecs"
   role   = aws_iam_role.ecs_task_execution_role.name
   policy = data.aws_iam_policy_document.ecs_cloudwatch_policy.json
 }
 
-resource "aws_iam_role_policy" "attach_kinesis_to_ecs" {
-  name   = "attach_kinesis_to_ecs"
-  role   = aws_iam_role.ecs_task_execution_role.name
-  policy = data.aws_iam_policy_document.ecs_kinesis_policy.json
-}
-
-resource "aws_iam_role_policy" "attach_ecr_to_ecs" {
+resource "aws_iam_role_policy" "attach_ecr_to_execution_ecs" {
   name   = "attach_ecr_to_ecs"
   role   = aws_iam_role.ecs_task_execution_role.name
   policy = data.aws_iam_policy_document.ecs_ecr_policy.json
 }
 
-resource "aws_iam_role_policy" "attach_ecr_auth_to_ecs" {
-  name   = "attach_ecr_auth_to_ecs"
-  role   = aws_iam_role.ecs_task_execution_role.name
-  policy = data.aws_iam_policy_document.ecs_ecr_auth_policy.json
+resource "aws_iam_role_policy" "attach_kinesis_to_ecs" {
+  name   = "attach_kinesis_to_ecs"
+  role   = aws_iam_role.ecs_task_role.name
+  policy = data.aws_iam_policy_document.ecs_kinesis_policy.json
 }
 
 resource "aws_iam_role_policy" "attach_kinesis_to_iot" {
   name   = "attach_kinesis_to_iot"
   role   = aws_iam_role.iot_kinesis_role.name
-  policy = data.aws_iam_policy_document.iot_kinesis_role_policy.json
+  policy = data.aws_iam_policy_document.iot_kinesis_policy.json
 }

@@ -5,6 +5,7 @@ resource "aws_ecs_task_definition" "sensor_analytics" {
   cpu                      = var.fargate_cpu
   memory                   = var.fargate_memory
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
+  task_role_arn            = aws_iam_role.ecs_task_role.arn
 
   container_definitions = <<DEFINITION
 [
@@ -16,8 +17,8 @@ resource "aws_ecs_task_definition" "sensor_analytics" {
     "networkMode": "awsvpc",
     "portMappings": [
       {
-        "containerPort": 8080,
-        "hostPort": 8080
+        "containerPort": 3000,
+        "hostPort": 3000
       }
     ],
     "environment": [
@@ -27,7 +28,7 @@ resource "aws_ecs_task_definition" "sensor_analytics" {
       },
       {
         "name": "GF_SERVER_HTTP_PORT",
-        "value": "8080"
+        "value": "3000"
       },
       {
         "name": "GF_SECURITY_ADMIN_USER",
@@ -158,7 +159,7 @@ resource "aws_ecs_service" "main" {
   load_balancer {
     target_group_arn = aws_alb_target_group.grafana.id
     container_name   = "grafana"
-    container_port   = 8080
+    container_port   = 3000
   }
 
   depends_on = [aws_alb_listener.grafana]
@@ -179,7 +180,7 @@ resource "aws_alb_listener" "grafana" {
 // Target Groups
 resource "aws_alb_target_group" "grafana" {
   name        = "grafana"
-  port        = 8080
+  port        = 3000
   protocol    = "HTTP"
   vpc_id      = aws_vpc.main.id
   target_type = "ip"
