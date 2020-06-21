@@ -17,8 +17,7 @@ resource "aws_ecs_task_definition" "sensor_analytics" {
     "networkMode": "awsvpc",
     "portMappings": [
       {
-        "containerPort": 3000,
-        "hostPort": 3000
+        "containerPort": 3000
       }
     ],
     "environment": [
@@ -68,8 +67,7 @@ resource "aws_ecs_task_definition" "sensor_analytics" {
     "networkMode": "awsvpc",
     "portMappings": [
       {
-        "containerPort": 8086,
-        "hostPort": 8086
+        "containerPort": 8086
       }
     ],
     "environment": [
@@ -167,7 +165,7 @@ resource "aws_ecs_service" "main" {
 
 // Load Balancer Listeners
 resource "aws_alb_listener" "grafana" {
-  load_balancer_arn = aws_alb.main.id
+  load_balancer_arn = aws_lb.main.id
   port              = "80"
   protocol          = "HTTP"
 

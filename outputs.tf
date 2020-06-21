@@ -1,5 +1,5 @@
 output "dashboard" {
-  value = "http://${aws_alb.main.dns_name}"
+  value = "http://${aws_lb.main.dns_name}"
   description = "URL where graphana dashboard can be accessed."
 }
 

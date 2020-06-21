@@ -6,7 +6,7 @@ provider "aws" {
 
   allowed_account_ids = [
     "961622453478", // leonardo cordero's account
-    "gorillalogic"
+    "002631123367"
   ]
 }
 
