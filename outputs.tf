@@ -1,3 +1,4 @@
 output "alb_hostname" {
-  value = "${aws_alb.main.dns_name}"
+  value = "http://${aws_alb.main.dns_name}"
+  description = "URL where graphana dashboard can be accessed."
 }
