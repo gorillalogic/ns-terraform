@@ -41,3 +41,12 @@ variable "mqtt_topic" {
 variable "ecs_cluster_name" {
   default     = "tf-ecs-cluster"
 }
+
+variable "default_tags" {
+  type = map(string)
+  default = {
+    initiative: "ideas",
+    team: "noisealert",
+    version: "0.2"
+  }
+}
