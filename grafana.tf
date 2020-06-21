@@ -119,14 +119,6 @@ resource "aws_ecs_service" "main" {
   depends_on = [aws_alb_listener.front_end]
 }
 
-resource "aws_alb_target_group" "grafana" {
-  name        = "tf-ecs-grafana"
-  port        = var.app_port
-  protocol    = "HTTP"
-  vpc_id      = aws_vpc.main.id
-  target_type = "ip"
-}
-
 resource "aws_alb_listener" "front_end" {
   load_balancer_arn = aws_alb.main.id
   port              = "80"
@@ -136,4 +128,12 @@ resource "aws_alb_listener" "front_end" {
     target_group_arn = aws_alb_target_group.grafana.id
     type             = "forward"
   }
+}
+
+resource "aws_alb_target_group" "grafana" {
+  name        = "alb-grafana"
+  port        = var.app_port
+  protocol    = "HTTP"
+  vpc_id      = aws_vpc.main.id
+  target_type = "ip"
 }
