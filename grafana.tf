@@ -16,8 +16,8 @@ resource "aws_ecs_task_definition" "grafana" {
     "networkMode": "awsvpc",
     "portMappings": [
       {
-        "containerPort": ${var.app_port},
-        "hostPort": ${var.app_port}
+        "containerPort": 8080,
+        "hostPort": 8080
       }
     ],
     "environment": [
@@ -27,7 +27,7 @@ resource "aws_ecs_task_definition" "grafana" {
       },
       {
         "name": "GF_SERVER_HTTP_PORT",
-        "value": "${var.app_port}"
+        "value": "8080"
       },
       {
         "name": "GF_SECURITY_ADMIN_USER",
@@ -113,13 +113,23 @@ resource "aws_ecs_service" "main" {
   load_balancer {
     target_group_arn = aws_alb_target_group.grafana.id
     container_name   = "grafana"
-    container_port   = var.app_port
+    container_port   = 8080
   }
 
-  depends_on = [aws_alb_listener.front_end]
+  load_balancer {
+    target_group_arn = aws_alb_target_group.influxdb.id
+    container_name   = "influxdb"
+    container_port   = 8086
+  }
+
+  depends_on = [
+    aws_alb_listener.grafana,
+    aws_alb_listener.influxdb
+  ]
 }
 
-resource "aws_alb_listener" "front_end" {
+// Load Balancer Listeners
+resource "aws_alb_listener" "grafana" {
   load_balancer_arn = aws_alb.main.id
   port              = "80"
   protocol          = "HTTP"
@@ -130,9 +140,29 @@ resource "aws_alb_listener" "front_end" {
   }
 }
 
+resource "aws_alb_listener" "influxdb" {
+  load_balancer_arn = aws_alb.main.id
+  port              = "8086"
+  protocol          = "HTTP"
+
+  default_action {
+    target_group_arn = aws_alb_target_group.influxdb.id
+    type             = "forward"
+  }
+}
+
+// Target Groups
 resource "aws_alb_target_group" "grafana" {
-  name        = "alb-grafana"
-  port        = var.app_port
+  name        = "alb_grafana"
+  port        = 8080
+  protocol    = "HTTP"
+  vpc_id      = aws_vpc.main.id
+  target_type = "ip"
+}
+
+resource "aws_alb_target_group" "influxdb" {
+  name        = "alb_influxdb"
+  port        = 8086
   protocol    = "HTTP"
   vpc_id      = aws_vpc.main.id
   target_type = "ip"

@@ -47,3 +47,20 @@ variable "mqtt_topic" {
   description = "Topic that devices push events to."
   default     = "sensors/noise"
 }
+
+variable "influxdb_host" {
+  description = "Host where influxdb can be accessed."
+  default = ""
+}
+
+variable "influxdb_port" {
+
+}
+
+variable "influxdb_db" {
+
+}
+
+variable "influxdb_client" {
+
+}

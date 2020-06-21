@@ -22,7 +22,3 @@ resource "aws_lambda_function" "lambda" {
     # kinesis and put as batches in influxdb.
   }
 }
-
-# TODO: Actually, this might not be the best approach, it is easier
-# if we just add a new container to ECS with a python agent that
-# is able to read from kinesis and write to influxdb.
