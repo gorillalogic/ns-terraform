@@ -1,5 +1,9 @@
 terraform {
   required_version = ">= 0.12"
+
+  backend "local" {
+    path = ".secrets/terraform.tfstate"
+  }
 }
 
 resource "aws_lb" "main" {
