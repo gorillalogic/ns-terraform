@@ -178,6 +178,20 @@ resource "aws_alb_listener" "grafana" {
   }
 }
 
+resource "aws_alb_listener" "grafana-https" {
+  load_balancer_arn = aws_lb.main.id
+  port              = "443"
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+  // This has to be imported manually from namecheap, because namecheap API is not available freely.
+  certificate_arn   = "arn:aws:acm:us-east-1:002631123367:certificate/7d16569b-9b64-4f11-9930-4fcd959e9725"
+
+  default_action {
+    target_group_arn = aws_alb_target_group.grafana.id
+    type             = "forward"
+  }
+}
+
 // Target Groups
 resource "aws_alb_target_group" "grafana" {
   name        = "grafana"
