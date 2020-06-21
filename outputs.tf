@@ -17,3 +17,8 @@ output "private_key" {
   value = "${aws_iot_certificate.pi_collector.private_key}"
   description = "Thing pi_collector private key."
 }
+
+output "public_key" {
+  value = "${aws_iot_certificate.pi_collector.public_key}"
+  description = "Thing pi_collector public key."
+}
