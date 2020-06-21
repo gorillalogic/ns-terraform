@@ -77,42 +77,6 @@ data "aws_iam_policy_document" "iot_kinesis_policy" {
   }
 }
 
-data "aws_iam_policy_document" "iot_thing_connect_policy" {
-  statement {
-    actions = [
-      "iot:Connect",
-    ]
-
-    resources = [
-      "arn:aws:iot:${var.aws_region}:${var.aws_account_id}:client/${aws_iot_thing.pi_collector.name}"
-    ]
-  }
-}
-
-data "aws_iam_policy_document" "iot_thing_pub_policy" {
-  statement {
-    actions = [
-      "iot:Publish",
-      "iot:Receive"
-    ]
-
-    resources = [
-      "arn:aws:iot:${var.aws_region}:${var.aws_account_id}:topic/sensors/noise"
-    ]
-  }
-}
-
-// Standalone Policies
-resource "aws_iot_policy" "iot_thing_connect_policy" {
-  name = "iot-thing-connect-policy"
-  policy = data.aws_iam_policy_document.iot_thing_connect_policy.json
-}
-
-resource "aws_iot_policy" "iot_thing_pub_policy" {
-  name = "iot-thing-pub-policy"
-  policy = data.aws_iam_policy_document.iot_thing_pub_policy.json
-}
-
 // Roles
 resource "aws_iam_role" "ecs_task_execution_role" {
   name = "ecs_task_execution_role"
