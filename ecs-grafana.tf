@@ -1,10 +1,10 @@
-resource "aws_ecs_task_definition" "grafana" {
-  family                   = "grafana"
+resource "aws_ecs_task_definition" "sensor_analytics" {
+  family                   = "sensor_analytics"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = var.fargate_cpu
   memory                   = var.fargate_memory
-  execution_role_arn       = aws_iam_role.grafana_ecs_task_execution_role.arn
+  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
 
   container_definitions = <<DEFINITION
 [
@@ -54,7 +54,7 @@ resource "aws_ecs_task_definition" "grafana" {
       "logDriver": "awslogs",
       "options": {
         "awslogs-group": "/fargate/service/grafana",
-        "awslogs-region": "us-east-1",
+        "awslogs-region": "${var.aws_region}",
         "awslogs-stream-prefix": "grafana"
       }
     }
@@ -89,8 +89,53 @@ resource "aws_ecs_task_definition" "grafana" {
       "logDriver": "awslogs",
       "options": {
         "awslogs-group": "/fargate/service/influxdb",
-        "awslogs-region": "us-east-1",
+        "awslogs-region": "${var.aws_region}",
         "awslogs-stream-prefix": "influxdb"
+      }
+    }
+  },
+  {
+    "cpu": 256,
+    "memory": 512,
+    "image": "${aws_ecr_repository.kinesis_consumer.repository_url}:latest",
+    "name": "kinesis-consumer",
+    "networkMode": "awsvpc",
+    "environment": [
+      {
+        "name": "INFLUXDB_HOST",
+        "value": "localhost"
+      },
+      {
+        "name": "INFLUXDB_PORT",
+        "value": "8086"
+      },
+      {
+        "name": "INFLUXDB_DB",
+        "value": "sensordb"
+      },
+      {
+        "name": "INFLUXDB_USER",
+        "value": "noise"
+      },
+      {
+        "name": "INFLUXDB_PASS",
+        "value": "42noisealert42"
+      },
+      {
+        "name": "KINESIS_STREAM_NAME",
+        "value": "mqtt-ingestor"
+      },
+      {
+        "name": "AWS_REGION",
+        "value": "${var.aws_region}"
+      }
+    ],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "/fargate/service/kinesis-consumer",
+        "awslogs-region": "${var.aws_region}",
+        "awslogs-stream-prefix": "kinesis-consumer"
       }
     }
   }
@@ -101,7 +146,7 @@ DEFINITION
 resource "aws_ecs_service" "main" {
   name            = "tf-ecs-service"
   cluster         = aws_ecs_cluster.main.id
-  task_definition = aws_ecs_task_definition.grafana.arn
+  task_definition = aws_ecs_task_definition.sensor_analytics.arn
   desired_count   = var.app_count
   launch_type     = "FARGATE"
 
@@ -116,16 +161,7 @@ resource "aws_ecs_service" "main" {
     container_port   = 8080
   }
 
-  load_balancer {
-    target_group_arn = aws_alb_target_group.influxdb.id
-    container_name   = "influxdb"
-    container_port   = 8086
-  }
-
-  depends_on = [
-    aws_alb_listener.grafana,
-    aws_alb_listener.influxdb
-  ]
+  depends_on = [aws_alb_listener.grafana]
 }
 
 // Load Balancer Listeners
@@ -140,29 +176,10 @@ resource "aws_alb_listener" "grafana" {
   }
 }
 
-resource "aws_alb_listener" "influxdb" {
-  load_balancer_arn = aws_alb.main.id
-  port              = "8086"
-  protocol          = "HTTP"
-
-  default_action {
-    target_group_arn = aws_alb_target_group.influxdb.id
-    type             = "forward"
-  }
-}
-
 // Target Groups
 resource "aws_alb_target_group" "grafana" {
-  name        = "alb_grafana"
+  name        = "grafana"
   port        = 8080
-  protocol    = "HTTP"
-  vpc_id      = aws_vpc.main.id
-  target_type = "ip"
-}
-
-resource "aws_alb_target_group" "influxdb" {
-  name        = "alb_influxdb"
-  port        = 8086
   protocol    = "HTTP"
   vpc_id      = aws_vpc.main.id
   target_type = "ip"

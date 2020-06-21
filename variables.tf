@@ -35,32 +35,15 @@ variable "app_count" {
 
 variable "fargate_cpu" {
   description = "Fargate instance CPU units to provision (1 vCPU = 1024 CPU units)"
-  default     = "512"
+  default     = "1024"
 }
 
 variable "fargate_memory" {
   description = "Fargate instance memory to provision (in MiB)"
-  default     = "1024"
+  default     = "2048"
 }
 
 variable "mqtt_topic" {
   description = "Topic that devices push events to."
   default     = "sensors/noise"
-}
-
-variable "influxdb_host" {
-  description = "Host where influxdb can be accessed."
-  default = ""
-}
-
-variable "influxdb_port" {
-
-}
-
-variable "influxdb_db" {
-
-}
-
-variable "influxdb_client" {
-
 }
