@@ -9,7 +9,7 @@ sudo service docker start
 sudo start ecs
 
 #Adding cluster name in ecs config
-echo ECS_CLUSTER=tf-ecs-cluster >> /etc/ecs/ecs.config
+echo ECS_CLUSTER=${var.ecs_cluster_name} >> /etc/ecs/ecs.config
 cat /etc/ecs/ecs.config | grep "ECS_CLUSTER"
 EOF
 }

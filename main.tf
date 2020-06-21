@@ -10,6 +10,6 @@ resource "aws_lb" "main" {
 }
 
 resource "aws_ecs_cluster" "main" {
-  name = "tf-ecs-cluster"
+  name = var.ecs_cluster_name
   capacity_providers = [aws_ecs_capacity_provider.provider.name]
 }

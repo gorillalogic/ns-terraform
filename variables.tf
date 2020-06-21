@@ -37,3 +37,7 @@ variable "mqtt_topic" {
   description = "Topic that devices push events to."
   default     = "sensors/noise"
 }
+
+variable "ecs_cluster_name" {
+  default     = "tf-ecs-cluster"
+}
