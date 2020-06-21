@@ -15,7 +15,6 @@ resource "aws_iot_topic_rule" "kinesis_push_rule" {
   }
 }
 
-
 data "aws_iam_policy_document" "iot_thing_connect_policy" {
   statement {
     actions = [

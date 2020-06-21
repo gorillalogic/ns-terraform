@@ -91,7 +91,7 @@ resource "aws_security_group_rule" "outbound_internet_access" {
 resource "aws_launch_configuration" "launch" {
   name_prefix          = "ecs_ec2_"
   image_id             = data.aws_ami.amazon_linux_ecs.image_id
-  instance_type        = "t2.small"
+  instance_type        = "t2.micro"
   security_groups      = [aws_security_group.ec2_instance.id]
   user_data            = data.template_file.user_data.rendered
   iam_instance_profile = aws_iam_instance_profile.ecs_ec2_instance.arn

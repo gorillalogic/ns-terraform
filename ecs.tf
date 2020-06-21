@@ -3,7 +3,7 @@ resource "aws_ecs_task_definition" "sensor_analytics" {
   network_mode             = "awsvpc"
   requires_compatibilities = ["EC2"]
   cpu                      = 1024
-  memory                   = 1536
+  memory                   = 756
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
   task_role_arn            = aws_iam_role.ecs_task_role.arn
 
@@ -11,7 +11,7 @@ resource "aws_ecs_task_definition" "sensor_analytics" {
 [
   {
     "cpu": 256,
-    "memory": 512,
+    "memory": 256,
     "image": "${var.grafana_image}",
     "name": "grafana",
     "networkMode": "awsvpc",
@@ -62,7 +62,7 @@ resource "aws_ecs_task_definition" "sensor_analytics" {
   },
   {
     "cpu": 256,
-    "memory": 512,
+    "memory": 256,
     "image": "${var.influxdb_image}",
     "name": "influxdb",
     "networkMode": "awsvpc",
@@ -97,7 +97,7 @@ resource "aws_ecs_task_definition" "sensor_analytics" {
   },
   {
     "cpu": 256,
-    "memory": 512,
+    "memory": 256,
     "image": "${aws_ecr_repository.kinesis_consumer.repository_url}:latest",
     "name": "kinesis-consumer",
     "networkMode": "awsvpc",
