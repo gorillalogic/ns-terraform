@@ -5,16 +5,16 @@ variable "logs_retention_in_days" {
 }
 
 resource "aws_cloudwatch_log_group" "grafana" {
-  name              = "/fargate/service/grafana"
+  name              = "/ecs/service/grafana"
   retention_in_days = var.logs_retention_in_days
 }
 
 resource "aws_cloudwatch_log_group" "influxdb" {
-  name              = "/fargate/service/influxdb"
+  name              = "/ecs/service/influxdb"
   retention_in_days = var.logs_retention_in_days
 }
 
 resource "aws_cloudwatch_log_group" "kinesis_consumer" {
-  name              = "/fargate/service/kinesis-consumer"
+  name              = "/ecs/service/kinesis-consumer"
   retention_in_days = var.logs_retention_in_days
 }

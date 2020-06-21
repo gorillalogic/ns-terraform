@@ -5,10 +5,6 @@ resource "aws_ecr_repository" "kinesis_consumer" {
   image_scanning_configuration {
     scan_on_push = true
   }
-
-  lifecycle {
-    prevent_destroy = true
-  }
 }
 
 resource "aws_ecr_lifecycle_policy" "foopolicy" {

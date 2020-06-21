@@ -1,9 +1,9 @@
 resource "aws_ecs_task_definition" "sensor_analytics" {
   family                   = "sensor_analytics"
   network_mode             = "awsvpc"
-  requires_compatibilities = ["FARGATE"]
-  cpu                      = var.fargate_cpu
-  memory                   = var.fargate_memory
+  requires_compatibilities = ["EC2"]
+  cpu                      = 1024
+  memory                   = 1536
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
   task_role_arn            = aws_iam_role.ecs_task_role.arn
 
@@ -17,6 +17,7 @@ resource "aws_ecs_task_definition" "sensor_analytics" {
     "networkMode": "awsvpc",
     "portMappings": [
       {
+        "hostPort": 3000,
         "containerPort": 3000
       }
     ],
@@ -53,7 +54,7 @@ resource "aws_ecs_task_definition" "sensor_analytics" {
     "logConfiguration": {
       "logDriver": "awslogs",
       "options": {
-        "awslogs-group": "/fargate/service/grafana",
+        "awslogs-group": "/ecs/service/grafana",
         "awslogs-region": "${var.aws_region}",
         "awslogs-stream-prefix": "grafana"
       }
@@ -67,6 +68,7 @@ resource "aws_ecs_task_definition" "sensor_analytics" {
     "networkMode": "awsvpc",
     "portMappings": [
       {
+        "hostPort": 8086,
         "containerPort": 8086
       }
     ],
@@ -87,7 +89,7 @@ resource "aws_ecs_task_definition" "sensor_analytics" {
     "logConfiguration": {
       "logDriver": "awslogs",
       "options": {
-        "awslogs-group": "/fargate/service/influxdb",
+        "awslogs-group": "/ecs/service/influxdb",
         "awslogs-region": "${var.aws_region}",
         "awslogs-stream-prefix": "influxdb"
       }
@@ -132,7 +134,7 @@ resource "aws_ecs_task_definition" "sensor_analytics" {
     "logConfiguration": {
       "logDriver": "awslogs",
       "options": {
-        "awslogs-group": "/fargate/service/kinesis-consumer",
+        "awslogs-group": "/ecs/service/kinesis-consumer",
         "awslogs-region": "${var.aws_region}",
         "awslogs-stream-prefix": "kinesis-consumer"
       }
@@ -147,7 +149,8 @@ resource "aws_ecs_service" "main" {
   cluster         = aws_ecs_cluster.main.id
   task_definition = aws_ecs_task_definition.sensor_analytics.arn
   desired_count   = var.app_count
-  launch_type     = "FARGATE"
+  health_check_grace_period_seconds = 60
+  launch_type     = "EC2"
 
   network_configuration {
     security_groups = [aws_security_group.ecs_tasks.id]
@@ -182,4 +185,8 @@ resource "aws_alb_target_group" "grafana" {
   protocol    = "HTTP"
   vpc_id      = aws_vpc.main.id
   target_type = "ip"
+
+  health_check {
+    path = "/login"
+  }
 }
