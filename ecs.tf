@@ -155,22 +155,32 @@ resource "aws_ecs_task_definition" "noise_alert" {
   ]
   DEFINITION
 
+  # volume {
+  #   name      = "influxdb-volume"
+
+  #   efs_volume_configuration {
+  #     file_system_id = aws_efs_file_system.noise_alert.id
+  #     root_directory = "/var/lib/influxdb"
+  #   }
+  # }
+
+  # volume {
+  #   name      = "grafana-volume"
+
+  #   efs_volume_configuration {
+  #     file_system_id = aws_efs_file_system.noise_alert.id
+  #     root_directory = "/var/lib/grafana"
+  #   }
+  # }
+
   volume {
     name      = "influxdb-volume"
-
-    efs_volume_configuration {
-      file_system_id = aws_efs_file_system.noise_alert.id
-      root_directory = "/var/lib/influxdb"
-    }
+    host_path = "/var/lib/influxdb"
   }
 
   volume {
     name      = "grafana-volume"
-
-    efs_volume_configuration {
-      file_system_id = aws_efs_file_system.noise_alert.id
-      root_directory = "/var/lib/grafana"
-    }
+    host_path = "/var/lib/grafana"
   }
 }
 
