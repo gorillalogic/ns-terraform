@@ -124,7 +124,7 @@ resource "aws_ecs_task_definition" "sensor_analytics" {
       },
       {
         "name": "KINESIS_STREAM_NAME",
-        "value": "mqtt-ingestor"
+        "value": "${aws_kinesis_stream.mqtt_ingestor}"
       },
       {
         "name": "AWS_REGION",
