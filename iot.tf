@@ -1,3 +1,5 @@
+data "aws_iot_endpoint" "mqtt_endpoint" {}
+
 resource "aws_iot_thing" "pi_collector" {
   name = "pi_collector"
 }

@@ -8,6 +8,11 @@ output "ecr_registry" {
   description = "URL of the ECR repository where the kinesis image can be accessed."
 }
 
+output "mqtt_endpoint" {
+  value = "${data.aws_iot_endpoint.mqtt_endpoint.endpoint_address}"
+  description = "Endpoint url for mqtt server."
+}
+
 output "certificate" {
   value = "${aws_iot_certificate.pi_collector.certificate_pem}"
   description = "Thing pi_collector certificate."

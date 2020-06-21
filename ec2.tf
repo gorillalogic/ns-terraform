@@ -8,7 +8,7 @@ sudo yum install -y ecs-init
 sudo service docker start
 sudo start ecs
 
-#Adding cluster name in ecs config
+# Adding cluster name in ecs config
 echo ECS_CLUSTER=${var.ecs_cluster_name} >> /etc/ecs/ecs.config
 cat /etc/ecs/ecs.config | grep "ECS_CLUSTER"
 EOF
@@ -44,7 +44,6 @@ resource "aws_iam_role_policy_attachment" "ecs_ec2_role" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
 }
 
-# TODO: Limit this access.
 resource "aws_iam_role_policy_attachment" "ecs_ec2_cloudwatch_role" {
   role = aws_iam_role.ecs_ec2_instance_role.id
   policy_arn = "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
@@ -70,7 +69,6 @@ data "aws_ami" "amazon_linux_ecs" {
 # Therefore all resources created here have the name containing the name of the:
 # environment, cluster name en the instance_group name.
 # That is also the reason why ecs_instances is a seperate module and not everything is created here.
-
 resource "aws_security_group" "ec2_instance" {
   name        = "sg_ec2_instance"
   vpc_id      = aws_vpc.main.id
@@ -95,6 +93,10 @@ resource "aws_launch_configuration" "launch" {
   security_groups      = [aws_security_group.ec2_instance.id]
   user_data            = data.template_file.user_data.rendered
   iam_instance_profile = aws_iam_instance_profile.ecs_ec2_instance.arn
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 # Instances are scaled across availability zones http://docs.aws.amazon.com/autoscaling/latest/userguide/auto-scaling-benefits.html 
