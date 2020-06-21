@@ -1,4 +1,6 @@
-data "aws_iot_endpoint" "mqtt_endpoint" {}
+data "aws_iot_endpoint" "mqtt_endpoint" {
+  endpoint_type = "iot:Data-ATS"
+}
 
 resource "aws_iot_thing" "pi_collector" {
   name = "pi_collector"
