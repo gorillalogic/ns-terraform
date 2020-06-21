@@ -39,7 +39,7 @@ variable "mqtt_topic" {
 }
 
 variable "ecs_cluster_name" {
-  default     = "tf-ecs-cluster"
+  default     = "noise-alert"
 }
 
 variable "default_tags" {

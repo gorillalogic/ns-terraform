@@ -3,7 +3,7 @@ resource "aws_ecs_task_definition" "noise_alert" {
   network_mode             = "awsvpc"
   requires_compatibilities = ["EC2"]
   cpu                      = 1024
-  memory                   = 756
+  memory                   = 985
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
   task_role_arn            = aws_iam_role.ecs_task_role.arn
 
@@ -55,7 +55,7 @@ resource "aws_ecs_task_definition" "noise_alert" {
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-group": "/ecs/service/grafana",
+          "awslogs-group": "/noise-alert/grafana",
           "awslogs-region": "${var.aws_region}",
           "awslogs-stream-prefix": "grafana"
         }
@@ -68,8 +68,8 @@ resource "aws_ecs_task_definition" "noise_alert" {
       ]
     },
     {
-      "cpu": 256,
-      "memory": 256,
+      "cpu": 512,
+      "memory": 512,
       "image": "${var.influxdb_image}",
       "name": "influxdb",
       "networkMode": "awsvpc",
@@ -96,7 +96,7 @@ resource "aws_ecs_task_definition" "noise_alert" {
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-group": "/ecs/service/influxdb",
+          "awslogs-group": "/noise-alert/influxdb",
           "awslogs-region": "${var.aws_region}",
           "awslogs-stream-prefix": "influxdb"
         }
@@ -110,7 +110,7 @@ resource "aws_ecs_task_definition" "noise_alert" {
     },
     {
       "cpu": 256,
-      "memory": 256,
+      "memory": 217,
       "image": "${aws_ecr_repository.kinesis_consumer.repository_url}:latest",
       "name": "kinesis-consumer",
       "networkMode": "awsvpc",
@@ -147,7 +147,7 @@ resource "aws_ecs_task_definition" "noise_alert" {
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-group": "/ecs/service/kinesis-consumer",
+          "awslogs-group": "/noise-alert/kinesis-consumer",
           "awslogs-region": "${var.aws_region}",
           "awslogs-stream-prefix": "kinesis-consumer"
         }
@@ -186,7 +186,7 @@ resource "aws_ecs_task_definition" "noise_alert" {
 }
 
 resource "aws_ecs_service" "main" {
-  name            = "tf-ecs-service"
+  name            = "noise-alert"
   cluster         = aws_ecs_cluster.main.id
   task_definition = aws_ecs_task_definition.noise_alert.arn
   desired_count   = var.app_count
