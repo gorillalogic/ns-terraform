@@ -42,3 +42,8 @@ variable "fargate_memory" {
   description = "Fargate instance memory to provision (in MiB)"
   default     = "1024"
 }
+
+variable "mqtt_topic" {
+  description = "Topic that devices push events to."
+  default     = "sensors/noise"
+}

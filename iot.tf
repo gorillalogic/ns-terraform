@@ -5,7 +5,7 @@ resource "aws_iot_thing" "pi_collector" {
 resource "aws_iot_topic_rule" "kinesis_push_rule" {
   name = "kinesis_push_rule"
   enabled = true
-  sql = "SELECT * FROM 'topic/test'"
+  sql = "SELECT * FROM '${var.mqtt_topic}'"
   sql_version = "2015-10-08"
 
   kinesis {
