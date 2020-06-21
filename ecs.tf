@@ -58,7 +58,13 @@ resource "aws_ecs_task_definition" "noise_alert" {
           "awslogs-region": "${var.aws_region}",
           "awslogs-stream-prefix": "grafana"
         }
-      }
+      },
+      "mountPoints": [
+        {
+          "sourceVolume": "grafana-volume",
+          "containerPath": "/var/lib/grafana"
+        }
+      ]
     },
     {
       "cpu": 256,
@@ -144,13 +150,7 @@ resource "aws_ecs_task_definition" "noise_alert" {
           "awslogs-region": "${var.aws_region}",
           "awslogs-stream-prefix": "kinesis-consumer"
         }
-      },
-      "mountPoints": [
-        {
-          "sourceVolume": "grafana-volume",
-          "containerPath": "/var/lib/grafana"
-        }
-      ]
+      }
     }
   ]
   DEFINITION
