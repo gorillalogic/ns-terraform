@@ -4,7 +4,7 @@ provider "aws" {
   profile                 = "gorilla-noise-alert-terraform-dev"
 
   allowed_account_ids = [
-    "002631123367"
+    var.aws_account_id
   ]
 }
 

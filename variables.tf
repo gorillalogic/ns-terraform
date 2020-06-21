@@ -5,7 +5,7 @@ variable "aws_region" {
 
 variable "aws_account_id" {
   description = "AWS account ID"
-  default     = "961622453478"
+  default     = "002631123367"
 }
 
 variable "az_count" {
