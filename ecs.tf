@@ -15,6 +15,7 @@ resource "aws_ecs_task_definition" "noise_alert" {
       "image": "${var.grafana_image}",
       "name": "grafana",
       "networkMode": "awsvpc",
+      "user": "root",
       "portMappings": [
         {
           "hostPort": 3000,
